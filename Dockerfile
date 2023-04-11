@@ -18,6 +18,13 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# gds plugin installation
+RUN wget -O neo4j-graph-data-science-2.3.1.zip https://graphdatascience.ninja/neo4j-graph-data-science-2.3.1.zip && \
+    unzip neo4j-graph-data-science-2.3.1.zip && \
+    mv neo4j-graph-data-science-2.3.1.jar /var/lib/neo4j/plugins/ && \
+    rm neo4j-graph-data-science-2.3.1.zip && \
+    sed -i 's/#dbms.security.procedures.unrestricted=.*/dbms.security.procedures.unrestricted=gds\.\*/' /etc/neo4j/neo4j.conf
+
 # Change password
 RUN neo4j-admin dbms set-initial-password project2phase1
 
