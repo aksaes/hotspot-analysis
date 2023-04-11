@@ -57,8 +57,21 @@ class DataLoader:
         save_loc = "/var/lib/neo4j/import/" + file_path.split(".")[0] + '.csv'
         trips.to_csv(save_loc, index=False)
 
-        # TODO: Your code here
-
+        # Load data from csv file to neo4j
+        csv_file = save_loc.split("/")[-1]
+        with self.driver.session() as session:
+            query = f"""
+                LOAD CSV WITH HEADERS FROM 'file:///{csv_file}' AS row
+                MERGE (pickup:Location {{name: toInteger(row.PULocationID)}})
+                MERGE (dropoff:Location {{name: toInteger(row.DOLocationID)}})
+                CREATE (pickup)-[:TRIP {{
+                    distance: toFloat(row.trip_distance),
+                    fare: toFloat(row.fare_amount),
+                    pickup_dt: datetime(replace(row.tpep_pickup_datetime, " ", "T") + "Z"),
+                    dropoff_dt: datetime(replace(row.tpep_dropoff_datetime, " ", "T") + "Z")}}]
+                ->(dropoff)
+            """
+            session.run(query)
 
 def main():
 
