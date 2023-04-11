@@ -18,9 +18,30 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Change password
+RUN neo4j-admin dbms set-initial-password project2phase1
 
-# TODO: Complete the Dockerfile
+# Enable remote access
+RUN sed -i 's/#server.default_listen_address=0.0.0.0/server.default_listen_address=0.0.0.0/' /etc/neo4j/neo4j.conf
 
+# Install git
+RUN apt-get update && \
+    apt-get install -y git
+
+# Setting the Github Token as environment variable
+ENV GITHUB_TOKEN=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
+
+WORKDIR /cse511
+
+# Download python script from git repo
+RUN git clone https://CSE511-SPRING-2023:${GITHUB_TOKEN}@github.com/CSE511-SPRING-2023/asunny2-project-2.git /cse511/
+
+# Download dataset
+RUN wget -O yellow_tripdata_2022-03.parquet https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2022-03.parquet
+
+# Install required python packages
+RUN pip install --upgrade pip && \
+    pip install neo4j pandas pyarrow
 
 # Run the data loader script
 RUN chmod +x /cse511/data_loader.py && \
