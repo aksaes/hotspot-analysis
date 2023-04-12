@@ -67,8 +67,8 @@ class DataLoader:
                 CREATE (pickup)-[:TRIP {{
                     distance: toFloat(row.trip_distance),
                     fare: toFloat(row.fare_amount),
-                    pickup_dt: datetime(replace(row.tpep_pickup_datetime, " ", "T") + "Z"),
-                    dropoff_dt: datetime(replace(row.tpep_dropoff_datetime, " ", "T") + "Z")}}]
+                    pickup_dt: datetime(replace(row.tpep_pickup_datetime, " ", "T")),
+                    dropoff_dt: datetime(replace(row.tpep_dropoff_datetime, " ", "T"))}}]
                 ->(dropoff)
             """
             session.run(query)
