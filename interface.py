@@ -9,8 +9,35 @@ class Interface:
         self._driver.close()
 
     def bfs(self, start_node, last_node):
-        # TODO: Implement this method
-        raise NotImplementedError
+        
+        graph_name = 'trip_graph'
+
+        with self._driver.session() as session:
+            # Delete graph if it exists already
+            session.run(f"""
+                CALL gds.graph.drop('{graph_name}', false)
+            """)
+
+            # Create graph
+            session.run(f"""
+                CALL gds.graph.project(
+                    '{graph_name}',
+                    'Location',
+                    'TRIP'
+                );
+            """)
+
+            # Run BFS
+            result = session.run(f'''
+                MATCH (source: Location {{name: {start_node}}}), (target: Location {{name: {last_node}}})
+                CALL gds.bfs.stream('{graph_name}', {{
+                    sourceNode: source,
+                    targetNodes: target }})
+                YIELD path
+                RETURN path
+            ''').data()
+        
+        return result
 
     def pagerank(self, max_iterations, weight_property):
 
