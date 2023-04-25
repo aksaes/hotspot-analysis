@@ -6,8 +6,14 @@ spec:
   containers:
   - name: python
     image: python:3.9
-    command: ["sleep"]
-    args: ["infinity"]
+    command: ["/bin/bash", "-c"]
+    args:
+      - pip install confluent-kafka
+        && sleep infinity
     env:
     - name: PYTHONUNBUFFERED
       value: "1"
+    resources:
+      limits:
+        memory: "1000Mi"
+        cpu: "1000m"
