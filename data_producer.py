@@ -7,9 +7,6 @@ import pandas as pd
 # set the topic name
 topic_name = "nyc_taxicab_data"
 conf = {'bootstrap.servers': 'localhost:9092'}
-# Extra: Used this to test within cluster
-conf = {'bootstrap.servers': 'kafka-service:9092'} 
-# Delete the extra above once setup is complete
 
 # create a Kafka producer instance
 producer = Producer(conf)
@@ -24,7 +21,6 @@ trips = trips.to_pandas()
 
 # iterate over each row in the table and send it to Kafka
 for index, row in trips.iterrows():
-
     # select a subset of columns
     row = row[['trip_distance', 'PULocationID', 'DOLocationID', 'fare_amount']]
 
