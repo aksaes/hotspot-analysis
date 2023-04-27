@@ -44,5 +44,6 @@ while True:
             print('Error occured: {0}'.format(msg.error().str()))
     else:
         print('Received message: {0}'.format(msg.value()))
+        break
 
 consumer.close()
