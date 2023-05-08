@@ -1,27 +1,38 @@
 # asunny2-project-2
-Minikube is started first.
+Minikube is started first and dashboard launched for viewing the cluster.
 
 ```
-minikube start --driver=docker
+minikube start --driver=docker --cpus=7 --memory=7g 
+minikube dashboard
 ```
-After this, kafka deployment is created. For that zookeeper-setup.yaml and kafka-setup.yaml is completed.
-
-Then the deployments and services are created using the following commands.
+After this, kafka service and deployment is created using zookeeper-setup.yaml and kafka-setup.yaml.
 
 ```
 kubectl apply -f .\zookeeper-setup.yaml
 kubectl apply -f .\kafka-setup.yaml
 ```
-After this, created another python pod using python-setup.yaml
+After this, helm is installed and executed to create the Kafka Connect Neo4j Connector, neo4j service created and service deployment for Kafka and Neo4j connection is created.
 
 ```
-kubectl apply -f .\python-setup.yaml
+helm install my-neo4j-release neo4j/neo4j -f neo4j-values.yaml
+kubectl apply -f neo4j-service.yaml
+kubectl apply -f kakfa-neo4j-connector.yaml
 ```
 
-Copied the custom_data_producer.py into the python pod using
+Port-forwarding is done to allow the services and database to be accessible from outside the minikube cluster.
+```
+kubectl port-forward svc/neo4j-service 7474:7474 7687:7687
+kubectl port-forward svc/kafka-service 9092:9092
+```
+
+Now the database is loaded with the data from the dataset using 
 
 ```
-kubectl cp custom_data_producer.py python-pod:custom_data_producer.py
+python3 data_producer.py
 ```
 
-Tested the kafka service from within the deployment using the script.
+PageRank and BFS is implemented in interface.py and tested using 
+
+```
+python3 tester.py
+```
